@@ -3,7 +3,7 @@
 // ===========================
 
 // !! GANTI PASSWORD DI BAWAH INI !!
-const ADMIN_PASSWORD = 'doominiks2025';
+const ADMIN_PASSWORD = 'doominiksaja';
 
 let adminLoggedIn = false;
 
