@@ -1,0 +1,45 @@
+body{
+  background:#050505;
+  color:white;
+  font-family:sans-serif;
+}
+
+/* LOADING */
+#fb-loading{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+
+#fb-loading.done{
+  opacity:0;
+  pointer-events:none;
+  transition:0.5s;
+}
+
+/* COIN */
+#nav-coin-display{
+  color:red;
+  border:1px solid rgba(220,0,0,0.4);
+  padding:10px;
+  display:inline-block;
+}
+
+/* ORDER */
+.order-item{
+  border:1px solid red;
+  padding:10px;
+  margin-top:10px;
+}
+
+.status-wait{
+  color:orange;
+}
+
+.status-done{
+  color:#0f0;
+}
