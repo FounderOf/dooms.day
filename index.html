@@ -1,0 +1,2350 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOOMINIKS STORE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --glow: #ff0033;
+            --glow2: #ff1a1a;
+            --bg: #0a0a0f;
+            --card: #12121a;
+            --card2: #1a1a25;
+            --text: #e0e0e0;
+            --accent: #ff0033;
+            --gold: #ffd700;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* LOADING SCREEN */
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #050508;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 99999; transition: opacity 0.8s, visibility 0.8s;
+        }
+        #loading-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loader-ring {
+            width: 120px; height: 120px; border-radius: 50%;
+            border: 4px solid transparent;
+            border-top: 4px solid var(--glow);
+            border-right: 4px solid var(--glow2);
+            animation: spinRing 1.2s linear infinite;
+            box-shadow: 0 0 30px var(--glow), inset 0 0 30px rgba(255,0,51,0.1);
+            position: relative;
+        }
+        .loader-ring::before {
+            content: ''; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border-radius: 50%; border: 3px solid transparent;
+            border-top: 3px solid #ff6666; border-left: 3px solid #ff6666;
+            animation: spinRing 0.8s linear infinite reverse;
+        }
+        @keyframes spinRing { to { transform: rotate(360deg); } }
+        .loader-title {
+            font-family: 'Orbitron', sans-serif; font-size: 28px; font-weight: 900;
+            color: var(--glow); margin-top: 30px;
+            text-shadow: 0 0 20px var(--glow), 0 0 40px var(--glow), 0 0 80px var(--glow);
+            animation: pulseGlow 1.5s ease-in-out infinite;
+        }
+        .loader-bar-wrap {
+            width: 280px; height: 4px; background: #1a1a2e; border-radius: 4px;
+            margin-top: 25px; overflow: hidden;
+        }
+        .loader-bar {
+            height: 100%; width: 0%; border-radius: 4px;
+            background: linear-gradient(90deg, var(--glow), #ff6666, var(--glow));
+            background-size: 200%; animation: loadBar 2.5s ease forwards, shimmer 1s linear infinite;
+        }
+        @keyframes loadBar { to { width: 100%; } }
+        @keyframes shimmer { to { background-position: -200% center; } }
+        .loader-text { margin-top: 15px; font-size: 13px; color: #555; letter-spacing: 3px; text-transform: uppercase; }
+        @keyframes pulseGlow {
+            0%, 100% { text-shadow: 0 0 20px var(--glow), 0 0 40px var(--glow); }
+            50% { text-shadow: 0 0 40px var(--glow), 0 0 80px var(--glow), 0 0 120px var(--glow); }
+        }
+
+        /* PARTICLES */
+        .particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .particle {
+            position: absolute; width: 3px; height: 3px; background: var(--glow);
+            border-radius: 50%; opacity: 0.3; animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        /* NAV */
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            background: rgba(10,10,15,0.95); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,0,51,0.2);
+            box-shadow: 0 4px 30px rgba(255,0,51,0.1);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto; padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-brand {
+            font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900;
+            color: var(--glow); text-shadow: 0 0 15px var(--glow);
+            cursor: pointer;
+        }
+        .nav-links { display: flex; gap: 5px; flex-wrap: wrap; }
+        .nav-link {
+            padding: 8px 14px; border-radius: 8px; cursor: pointer;
+            font-size: 13px; font-weight: 500; transition: all 0.3s;
+            color: #888; border: 1px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--glow); background: rgba(255,0,51,0.1);
+            border-color: rgba(255,0,51,0.3); text-shadow: 0 0 10px var(--glow);
+        }
+        .nav-user { display: flex; align-items: center; gap: 10px; }
+        .nav-user-btn {
+            padding: 8px 18px; border-radius: 8px; cursor: pointer;
+            font-size: 13px; font-weight: 600; border: 1px solid var(--glow);
+            color: var(--glow); background: transparent; transition: all 0.3s;
+            font-family: 'Poppins'; 
+        }
+        .nav-user-btn:hover {
+            background: var(--glow); color: #fff;
+            box-shadow: 0 0 20px rgba(255,0,51,0.5);
+        }
+        .nav-user-btn.filled { background: var(--glow); color: #fff; }
+        .nav-user-btn.filled:hover { box-shadow: 0 0 25px rgba(255,0,51,0.6); }
+
+        /* GLOW PANEL */
+        .glow-panel {
+            background: var(--card); border-radius: 16px; padding: 25px;
+            border: 1px solid rgba(255,0,51,0.15);
+            box-shadow: 0 0 15px rgba(255,0,51,0.08), inset 0 0 15px rgba(255,0,51,0.03);
+            transition: all 0.3s;
+        }
+        .glow-panel:hover {
+            border-color: rgba(255,0,51,0.35);
+            box-shadow: 0 0 30px rgba(255,0,51,0.15), inset 0 0 20px rgba(255,0,51,0.05);
+            transform: translateY(-2px);
+        }
+
+        /* MAIN CONTAINER */
+        .main-container {
+            max-width: 1200px; margin: 0 auto; padding: 90px 20px 40px;
+            position: relative; z-index: 1;
+        }
+
+        /* HERO */
+        .hero {
+            text-align: center; padding: 60px 20px;
+            background: linear-gradient(135deg, rgba(255,0,51,0.08), transparent, rgba(255,0,51,0.05));
+            border-radius: 24px; border: 1px solid rgba(255,0,51,0.15);
+            margin-bottom: 40px; position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,0,51,0.05) 0%, transparent 70%);
+            animation: rotateGlow 20s linear infinite;
+        }
+        @keyframes rotateGlow { to { transform: rotate(360deg); } }
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif; font-size: 42px; font-weight: 900;
+            color: #fff; position: relative;
+            text-shadow: 0 0 30px var(--glow), 0 0 60px var(--glow);
+        }
+        .hero p { color: #888; margin-top: 15px; font-size: 16px; position: relative; }
+        .hero-stats {
+            display: flex; justify-content: center; gap: 40px; margin-top: 30px; position: relative;
+        }
+        .hero-stat span { display: block; }
+        .hero-stat .num {
+            font-family: 'Orbitron'; font-size: 28px; font-weight: 700;
+            color: var(--glow); text-shadow: 0 0 15px var(--glow);
+        }
+        .hero-stat .label { font-size: 12px; color: #666; margin-top: 5px; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* SECTION TITLES */
+        .section-title {
+            font-family: 'Orbitron'; font-size: 22px; font-weight: 700;
+            color: #fff; margin-bottom: 25px; display: flex; align-items: center; gap: 12px;
+        }
+        .section-title::before {
+            content: ''; width: 4px; height: 28px; background: var(--glow);
+            border-radius: 2px; box-shadow: 0 0 10px var(--glow);
+        }
+
+        /* PRODUCTS */
+        .filter-tabs {
+            display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .filter-tab {
+            padding: 6px 16px; border-radius: 20px; cursor: pointer;
+            font-size: 12px; border: 1px solid #333; color: #888;
+            background: transparent; transition: all 0.3s; font-family: 'Poppins';
+        }
+        .filter-tab.active, .filter-tab:hover {
+            border-color: var(--glow); color: var(--glow);
+            background: rgba(255,0,51,0.1); box-shadow: 0 0 10px rgba(255,0,51,0.2);
+        }
+        .products-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background: var(--card); border-radius: 16px; overflow: hidden;
+            border: 1px solid rgba(255,0,51,0.12); transition: all 0.3s; cursor: pointer;
+            box-shadow: 0 0 10px rgba(255,0,51,0.05); position: relative;
+        }
+        .product-card:hover {
+            transform: translateY(-5px); border-color: rgba(255,0,51,0.4);
+            box-shadow: 0 0 30px rgba(255,0,51,0.15);
+        }
+        .product-img {
+            width: 100%; height: 160px; background: linear-gradient(135deg, #1a1a2e, #16213e);
+            display: flex; align-items: center; justify-content: center; font-size: 50px;
+            position: relative;
+        }
+        .product-info { padding: 18px; }
+        .product-name { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+        .product-cat { font-size: 11px; color: var(--glow); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .product-price { font-family: 'Orbitron'; font-size: 18px; color: var(--glow); font-weight: 700; text-shadow: 0 0 8px rgba(255,0,51,0.4); }
+        .product-price-original { font-size: 13px; color: #666; text-decoration: line-through; margin-left: 8px; }
+        .product-coin { font-size: 12px; color: var(--gold); margin-top: 3px; }
+        .product-stock { font-size: 11px; color: #888; margin-top: 3px; }
+        .product-stock.low { color: #ff6b6b; }
+        .product-stock.out { color: #ff0033; }
+        .product-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .btn-buy {
+            flex: 1; padding: 10px; border: none; border-radius: 10px;
+            background: linear-gradient(135deg, var(--glow), #cc0029);
+            color: #fff; font-weight: 600; cursor: pointer; font-family: 'Poppins';
+            font-size: 13px; transition: all 0.3s;
+        }
+        .btn-buy:hover { box-shadow: 0 0 25px rgba(255,0,51,0.5); transform: scale(1.02); }
+        .btn-buy:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-cart {
+            padding: 10px 14px; border: 1px solid rgba(255,0,51,0.3); border-radius: 10px;
+            background: transparent; color: var(--glow); cursor: pointer; font-size: 16px;
+            transition: all 0.3s;
+        }
+        .btn-cart:hover { background: rgba(255,0,51,0.1); }
+        .discount-badge {
+            position: absolute; top: 10px; right: 10px; background: #ff0033;
+            color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 11px;
+            font-weight: 700; box-shadow: 0 0 10px rgba(255,0,51,0.5);
+        }
+
+        /* PAGES */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* AUTH */
+        .auth-container {
+            max-width: 420px; margin: 40px auto;
+        }
+        .auth-form { display: flex; flex-direction: column; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 13px; color: #888; font-weight: 500; }
+        .form-input {
+            padding: 12px 16px; border-radius: 10px; border: 1px solid #333;
+            background: var(--card2); color: #fff; font-size: 14px;
+            font-family: 'Poppins'; transition: all 0.3s; outline: none;
+        }
+        .form-input:focus {
+            border-color: var(--glow); box-shadow: 0 0 15px rgba(255,0,51,0.2);
+        }
+        .btn-primary {
+            padding: 14px; border: none; border-radius: 12px;
+            background: linear-gradient(135deg, var(--glow), #cc0029);
+            color: #fff; font-weight: 700; font-size: 15px; cursor: pointer;
+            font-family: 'Poppins'; transition: all 0.3s; margin-top: 5px;
+        }
+        .btn-primary:hover { box-shadow: 0 0 25px rgba(255,0,51,0.5); }
+        .auth-switch { text-align: center; margin-top: 15px; color: #666; font-size: 13px; }
+        .auth-switch a { color: var(--glow); cursor: pointer; text-decoration: none; }
+
+        /* PROFILE */
+        .profile-header {
+            display: flex; align-items: center; gap: 25px; flex-wrap: wrap;
+        }
+        .profile-avatar {
+            width: 90px; height: 90px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--glow), #cc0029);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px; font-weight: 700; color: #fff;
+            box-shadow: 0 0 25px rgba(255,0,51,0.4);
+            border: 3px solid rgba(255,0,51,0.5);
+        }
+        .profile-info h2 { font-family: 'Orbitron'; font-size: 22px; }
+        .profile-badges { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .badge {
+            padding: 4px 12px; border-radius: 20px; font-size: 11px;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .badge-owner { background: linear-gradient(135deg, #ff0033, #ff6600); color: #fff; box-shadow: 0 0 15px rgba(255,0,51,0.5); animation: badgePulse 2s infinite; }
+        .badge-warrior { background: linear-gradient(135deg, #4a9eff, #0066cc); color: #fff; box-shadow: 0 0 10px rgba(74,158,255,0.4); }
+        .badge-elite { background: linear-gradient(135deg, #9b59b6, #6c3483); color: #fff; box-shadow: 0 0 10px rgba(155,89,182,0.4); }
+        .badge-master { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; box-shadow: 0 0 10px rgba(231,76,60,0.4); }
+        .badge-grandmaster { background: linear-gradient(135deg, #f39c12, #d68910); color: #fff; box-shadow: 0 0 10px rgba(243,156,18,0.4); }
+        .badge-mythical { background: linear-gradient(135deg, #ff0066, #ff00ff, #6600ff); color: #fff; box-shadow: 0 0 20px rgba(255,0,102,0.5); animation: badgePulse 1.5s infinite; }
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .profile-stats {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px; margin-top: 25px;
+        }
+        .stat-card {
+            text-align: center; padding: 20px;
+        }
+        .stat-value {
+            font-family: 'Orbitron'; font-size: 24px; font-weight: 700;
+            color: var(--glow); text-shadow: 0 0 10px rgba(255,0,51,0.4);
+        }
+        .stat-label { font-size: 12px; color: #666; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* TOPUP */
+        .topup-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .topup-card {
+            text-align: center; padding: 25px; cursor: pointer;
+        }
+        .topup-card:hover { border-color: var(--gold); box-shadow: 0 0 20px rgba(255,215,0,0.15); }
+        .topup-coins { font-family: 'Orbitron'; font-size: 28px; color: var(--gold); font-weight: 700; text-shadow: 0 0 10px rgba(255,215,0,0.3); }
+        .topup-price { font-size: 14px; color: #aaa; margin-top: 8px; }
+        .topup-bonus { font-size: 11px; color: #4CAF50; margin-top: 5px; font-weight: 600; }
+
+        /* ORDERS */
+        .order-card { margin-bottom: 15px; }
+        .order-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .order-id { font-family: 'Orbitron'; font-size: 13px; color: var(--glow); }
+        .order-status {
+            padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
+        }
+        .status-pending { background: rgba(255,193,7,0.15); color: #ffc107; }
+        .status-shipped { background: rgba(33,150,243,0.15); color: #2196f3; }
+        .status-delivered { background: rgba(76,175,80,0.15); color: #4CAF50; }
+        .status-waiting { background: rgba(255,87,34,0.15); color: #ff5722; }
+        .order-details { margin-top: 12px; font-size: 13px; color: #aaa; }
+        .btn-received {
+            margin-top: 10px; padding: 8px 20px; border: none; border-radius: 8px;
+            background: #4CAF50; color: #fff; cursor: pointer; font-family: 'Poppins';
+            font-size: 12px; font-weight: 600;
+        }
+        .proof-img { max-width: 200px; border-radius: 8px; margin-top: 10px; border: 1px solid #333; }
+
+        /* REVIEWS */
+        .review-card { margin-bottom: 15px; }
+        .review-user { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .review-stars { color: var(--gold); font-size: 14px; margin-top: 5px; }
+        .review-text { font-size: 13px; color: #aaa; margin-top: 6px; }
+        .review-date { font-size: 11px; color: #555; margin-top: 5px; }
+        .star-input { font-size: 28px; cursor: pointer; color: #333; transition: 0.2s; }
+        .star-input:hover, .star-input.active { color: var(--gold); text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+        .review-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-small { padding: 4px 10px; font-size: 11px; border: none; border-radius: 6px; cursor: pointer; font-family: 'Poppins'; }
+        .btn-delete { background: #ff3333; color: #fff; }
+        .btn-edit { background: #2196f3; color: #fff; }
+
+        /* CHAT */
+        .chat-widget {
+            position: fixed; bottom: 20px; right: 20px; z-index: 999;
+        }
+        .chat-toggle {
+            width: 56px; height: 56px; border-radius: 50%; border: none;
+            background: linear-gradient(135deg, var(--glow), #cc0029);
+            color: #fff; font-size: 24px; cursor: pointer;
+            box-shadow: 0 0 25px rgba(255,0,51,0.4); transition: all 0.3s;
+        }
+        .chat-toggle:hover { transform: scale(1.1); }
+        .chat-box {
+            position: absolute; bottom: 70px; right: 0; width: 340px; height: 450px;
+            background: var(--card); border-radius: 16px; border: 1px solid rgba(255,0,51,0.2);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5); display: none; flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-box.open { display: flex; }
+        .chat-header {
+            padding: 15px 18px; background: rgba(255,0,51,0.1);
+            border-bottom: 1px solid rgba(255,0,51,0.15);
+            font-weight: 600; font-size: 14px; display: flex; justify-content: space-between;
+            align-items: center;
+        }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .chat-msg {
+            max-width: 80%; padding: 10px 14px; border-radius: 12px;
+            font-size: 13px; line-height: 1.4;
+        }
+        .chat-msg.user { background: var(--glow); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .chat-msg.support { background: var(--card2); color: #ccc; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .chat-msg .msg-time { font-size: 10px; opacity: 0.6; margin-top: 4px; }
+        .chat-input-area { padding: 12px; border-top: 1px solid rgba(255,0,51,0.1); display: flex; gap: 8px; }
+        .chat-input {
+            flex: 1; padding: 10px 14px; border-radius: 10px; border: 1px solid #333;
+            background: var(--card2); color: #fff; font-size: 13px;
+            font-family: 'Poppins'; outline: none;
+        }
+        .chat-send {
+            padding: 10px 16px; border: none; border-radius: 10px;
+            background: var(--glow); color: #fff; cursor: pointer; font-size: 14px;
+        }
+
+        /* OWNER CHAT LIST */
+        .chat-user-item {
+            padding: 12px; border-radius: 10px; background: var(--card2);
+            margin-bottom: 10px; cursor: pointer; transition: all 0.3s;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .chat-user-item:hover { background: rgba(255,0,51,0.1); border-color: var(--glow); }
+        .chat-unread { background: var(--glow); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            z-index: 9999; display: none; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-content {
+            background: var(--card); border-radius: 20px; padding: 30px;
+            max-width: 500px; width: 100%; border: 1px solid rgba(255,0,51,0.2);
+            box-shadow: 0 0 40px rgba(255,0,51,0.15); max-height: 90vh; overflow-y: auto;
+        }
+        .modal-title { font-family: 'Orbitron'; font-size: 18px; margin-bottom: 20px; text-align: center; color: var(--glow); }
+        .modal-close {
+            float: right; background: none; border: none; color: #666;
+            font-size: 22px; cursor: pointer; margin-top: -10px;
+        }
+
+        /* PAYMENT */
+        .payment-option {
+            padding: 15px; border-radius: 12px; border: 1px solid #333;
+            cursor: pointer; transition: all 0.3s; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 12px; background: var(--card2);
+        }
+        .payment-option:hover, .payment-option.selected {
+            border-color: var(--glow); background: rgba(255,0,51,0.05);
+            box-shadow: 0 0 15px rgba(255,0,51,0.1);
+        }
+        .payment-option input { display: none; }
+        .payment-radio {
+            width: 20px; height: 20px; border-radius: 50%; border: 2px solid #555;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .payment-option.selected .payment-radio {
+            border-color: var(--glow);
+        }
+        .payment-option.selected .payment-radio::after {
+            content: ''; width: 10px; height: 10px; border-radius: 50%;
+            background: var(--glow); box-shadow: 0 0 8px var(--glow);
+        }
+
+        /* UPLOAD */
+        .upload-area {
+            border: 2px dashed #333; border-radius: 12px; padding: 30px;
+            text-align: center; cursor: pointer; transition: all 0.3s;
+            margin-top: 15px;
+        }
+        .upload-area:hover { border-color: var(--glow); background: rgba(255,0,51,0.05); }
+        .upload-area input { display: none; }
+        .upload-preview { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 10px; }
+
+        /* PROCESSING */
+        .processing-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 99999;
+            display: none; align-items: center; justify-content: center;
+            flex-direction: column;
+        }
+        .processing-overlay.active { display: flex; }
+        .processing-spinner {
+            width: 60px; height: 60px; border-radius: 50%;
+            border: 3px solid transparent; border-top: 3px solid var(--glow);
+            animation: spinRing 0.8s linear infinite;
+            box-shadow: 0 0 20px var(--glow);
+        }
+        .processing-text {
+            margin-top: 20px; font-family: 'Orbitron'; font-size: 16px;
+            color: var(--glow); text-shadow: 0 0 15px var(--glow);
+        }
+
+        /* OWNER PANEL */
+        .owner-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .owner-tab {
+            padding: 10px 20px; border-radius: 10px; cursor: pointer;
+            font-size: 13px; border: 1px solid #333; color: #888;
+            background: transparent; transition: all 0.3s; font-family: 'Poppins';
+        }
+        .owner-tab.active, .owner-tab:hover {
+            border-color: var(--glow); color: var(--glow);
+            background: rgba(255,0,51,0.1);
+        }
+        .owner-section { display: none; }
+        .owner-section.active { display: block; }
+        .owner-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .owner-action { margin-bottom: 15px; }
+        .owner-action select, .owner-action input, .owner-action textarea {
+            width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #333;
+            background: var(--card2); color: #fff; font-family: 'Poppins';
+            font-size: 13px; margin-top: 5px; outline: none;
+        }
+        .owner-action label { font-size: 13px; color: #888; }
+        .btn-owner {
+            padding: 10px 20px; border: none; border-radius: 8px;
+            background: linear-gradient(135deg, #ff6600, #ff0033);
+            color: #fff; font-weight: 600; cursor: pointer; font-family: 'Poppins';
+            font-size: 13px; margin-top: 10px;
+        }
+        .user-list-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 1px solid #222; font-size: 13px;
+        }
+        .log-item {
+            padding: 12px; background: var(--card2); border-radius: 8px;
+            margin-bottom: 10px; font-size: 12px;
+        }
+        .log-item .log-time { color: #555; font-size: 11px; }
+        .log-item .log-type { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+        .log-type.order { background: rgba(33,150,243,0.2); color: #2196f3; }
+        .log-type.payment { background: rgba(76,175,80,0.2); color: #4CAF50; }
+        .log-type.chat { background: rgba(255,193,7,0.2); color: #ffc107; }
+
+        /* DISCORD */
+        .discord-card {
+            text-align: center; max-width: 500px; margin: 40px auto;
+        }
+        .discord-icon { font-size: 80px; margin-bottom: 20px; }
+        .btn-discord {
+            display: inline-block; padding: 14px 40px; border-radius: 12px;
+            background: #5865F2; color: #fff; font-weight: 700; font-size: 16px;
+            text-decoration: none; cursor: pointer; border: none; font-family: 'Poppins';
+            transition: all 0.3s;
+        }
+        .btn-discord:hover { box-shadow: 0 0 30px rgba(88,101,242,0.5); transform: scale(1.05); }
+
+        /* DEPOSIT */
+        .deposit-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--glow); border-radius: 3px; }
+
+        /* TOAST */
+        .toast {
+            position: fixed; top: 80px; right: 20px; padding: 14px 24px;
+            border-radius: 12px; background: var(--card); color: #fff;
+            border: 1px solid rgba(255,0,51,0.3); box-shadow: 0 0 20px rgba(255,0,51,0.2);
+            z-index: 99999; font-size: 14px; transform: translateX(120%);
+            transition: transform 0.4s; display: flex; align-items: center; gap: 10px;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-color: rgba(76,175,80,0.3); box-shadow: 0 0 20px rgba(76,175,80,0.2); }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 26px; }
+            .hero-stats { gap: 20px; }
+            .hero-stat .num { font-size: 20px; }
+            .nav-links { display: none; }
+            .nav-inner { flex-wrap: wrap; gap: 10px; }
+            .chat-box { width: 300px; }
+            .profile-header { justify-content: center; text-align: center; }
+            .mobile-menu-btn { display: block; background: none; border: 1px solid #333; color: #fff; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 18px; }
+        }
+        @media (min-width: 769px) {
+            .mobile-menu-btn { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+    <div class="loader-ring"></div>
+    <div class="loader-title">DOOMINIKS STORE</div>
+    <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+    <div class="loader-text">Loading Experience...</div>
+</div>
+
+<!-- PARTICLES -->
+<div class="particles" id="particles"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- PROCESSING OVERLAY -->
+<div class="processing-overlay" id="processing">
+    <div class="processing-spinner"></div>
+    <div class="processing-text">Memproses Pembayaran...</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+    <div class="modal-content" id="modal-body"></div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-inner">
+        <div class="nav-brand" onclick="showPage('home')">⚡ DOOMINIKS</div>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        <div class="nav-links" id="nav-links">
+            <div class="nav-link active" onclick="showPage('home')">🏠 Home</div>
+            <div class="nav-link" onclick="showPage('products')">🛍️ Produk</div>
+            <div class="nav-link" onclick="showPage('topup')">🪙 Top Up</div>
+            <div class="nav-link" onclick="showPage('orders')">📦 Pesanan</div>
+            <div class="nav-link" onclick="showPage('reviews')">⭐ Ulasan</div>
+            <div class="nav-link" onclick="showPage('discord')">💬 Discord</div>
+        </div>
+        <div class="nav-user" id="nav-user"></div>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main-container">
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+        <div class="hero">
+            <h1>⚡ DOOMINIKS STORE ⚡</h1>
+            <p>Premium Digital Store — Game, Akun, Joki & Voucher Terpercaya</p>
+            <div class="hero-stats">
+                <div class="hero-stat"><span class="num" id="stat-products">0</span><span class="label">Produk</span></div>
+                <div class="hero-stat"><span class="num" id="stat-users">0</span><span class="label">Customer</span></div>
+                <div class="hero-stat"><span class="num" id="stat-orders">0</span><span class="label">Transaksi</span></div>
+                <div class="hero-stat"><span class="num" id="stat-rating">4.8</span><span class="label">Rating</span></div>
+            </div>
+        </div>
+
+        <div class="section-title">🔥 Produk Terlaris</div>
+        <div class="products-grid" id="home-products"></div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="page" id="page-products">
+        <div class="section-title">🛍️ Semua Produk</div>
+        <div class="filter-tabs" id="filter-tabs"></div>
+        <div class="products-grid" id="all-products"></div>
+    </div>
+
+    <!-- TOPUP -->
+    <div class="page" id="page-topup">
+        <div class="section-title">🪙 Top Up Coin</div>
+        <p style="color:#888; margin-bottom:25px; font-size:14px;">Beli coin untuk bertransaksi di DOOMINIKS STORE. Gunakan coin sebagai alternatif pembayaran IDR!</p>
+        <div class="topup-grid" id="topup-grid"></div>
+        <div style="margin-top:30px;">
+            <div class="section-title">💰 Deposit Saldo IDR</div>
+            <div class="deposit-grid" id="deposit-grid"></div>
+        </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="page" id="page-orders">
+        <div class="section-title">📦 Pesanan Saya</div>
+        <div id="orders-list"></div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="page" id="page-reviews">
+        <div class="section-title">⭐ Rating & Ulasan</div>
+        <div class="glow-panel" style="margin-bottom:25px;" id="review-form-area"></div>
+        <div id="reviews-list"></div>
+    </div>
+
+    <!-- DISCORD -->
+    <div class="page" id="page-discord">
+        <div class="section-title">💬 Komunitas Discord</div>
+        <div class="discord-card glow-panel">
+            <div class="discord-icon">🎮</div>
+            <h2 style="font-family:'Orbitron'; margin-bottom:10px;">Join Our Discord!</h2>
+            <p style="color:#888; margin-bottom:25px; font-size:14px;">Gabung komunitas DOOMINIKS STORE untuk info produk terbaru, promo, dan support langsung.</p>
+            <a id="discord-link" href="https://discord.gg/doominiks" target="_blank" class="btn-discord">🚀 Join Discord Server</a>
+        </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="page" id="page-profile">
+        <div class="section-title">👤 Profil Saya</div>
+        <div class="glow-panel" id="profile-content"></div>
+    </div>
+
+    <!-- AUTH -->
+    <div class="page" id="page-login">
+        <div class="auth-container">
+            <div class="glow-panel">
+                <h2 style="font-family:'Orbitron'; text-align:center; margin-bottom:25px; color:var(--glow);">🔐 LOGIN</h2>
+                <div class="auth-form">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" class="form-input" id="login-user" placeholder="Masukkan username">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-input" id="login-pass" placeholder="Masukkan password">
+                    </div>
+                    <button class="btn-primary" onclick="doLogin()">Login</button>
+                </div>
+                <div class="auth-switch">Belum punya akun? <a onclick="showPage('register')">Daftar di sini</a></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page" id="page-register">
+        <div class="auth-container">
+            <div class="glow-panel">
+                <h2 style="font-family:'Orbitron'; text-align:center; margin-bottom:25px; color:var(--glow);">📝 REGISTER</h2>
+                <div class="auth-form">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" class="form-input" id="reg-user" placeholder="Pilih username">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-input" id="reg-pass" placeholder="Buat password">
+                    </div>
+                    <div class="form-group">
+                        <label>Konfirmasi Password</label>
+                        <input type="password" class="form-input" id="reg-pass2" placeholder="Ulangi password">
+                    </div>
+                    <button class="btn-primary" onclick="doRegister()">Daftar Sekarang</button>
+                </div>
+                <div class="auth-switch">Sudah punya akun? <a onclick="showPage('login')">Login di sini</a></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OWNER PANEL -->
+    <div class="page" id="page-owner">
+        <div class="section-title">👑 Owner Panel</div>
+        <div class="owner-tabs">
+            <button class="owner-tab active" onclick="showOwnerTab('badge')">🏅 Badge</button>
+            <button class="owner-tab" onclick="showOwnerTab('product')">📦 Produk</button>
+            <button class="owner-tab" onclick="showOwnerTab('orders')">🛒 Pesanan</button>
+            <button class="owner-tab" onclick="showOwnerTab('discount')">🏷️ Diskon</button>
+            <button class="owner-tab" onclick="showOwnerTab('users')">👥 Users</button>
+            <button class="owner-tab" onclick="showOwnerTab('chat')">💬 Chat</button>
+            <button class="owner-tab" onclick="showOwnerTab('logs')">📋 Log</button>
+            <button class="owner-tab" onclick="showOwnerTab('settings')">⚙️ Settings</button>
+        </div>
+
+        <!-- Badge Section -->
+        <div class="owner-section active" id="owner-badge">
+            <div class="glow-panel">
+                <h3 style="margin-bottom:15px; color:var(--glow);">🏅 Gift Badge</h3>
+                <div class="owner-action">
+                    <label>Pilih User</label>
+                    <select id="owner-badge-user"></select>
+                </div>
+                <div class="owner-action">
+                    <label>Pilih Badge</label>
+                    <select id="owner-badge-type">
+                        <option value="warrior">⚔️ Warrior</option>
+                        <option value="elite">💎 Elite</option>
+                        <option value="master">🔥 Master</option>
+                        <option value="grandmaster">👑 Grandmaster</option>
+                        <option value="mythical">🌟 Mythical</option>
+                    </select>
+                </div>
+                <button class="btn-owner" onclick="giftBadge()">🎁 Gift Badge</button>
+                <button class="btn-owner" style="background:#ff3333;" onclick="removeBadge()">🗑️ Remove Badge</button>
+            </div>
+        </div>
+
+        <!-- Product Section -->
+        <div class="owner-section" id="owner-product">
+            <div class="owner-grid">
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">➕ Tambah Produk</h3>
+                    <div class="owner-action">
+                        <label>Nama Produk</label>
+                        <input type="text" id="new-prod-name" placeholder="Nama produk">
+                    </div>
+                    <div class="owner-action">
+                        <label>Kategori</label>
+                        <select id="new-prod-cat">
+                            <option value="Game">Game</option>
+                            <option value="Akun">Akun</option>
+                            <option value="Joki">Joki</option>
+                            <option value="Voucher">Voucher</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="owner-action">
+                        <label>Harga (IDR)</label>
+                        <input type="number" id="new-prod-price" placeholder="Harga">
+                    </div>
+                    <div class="owner-action">
+                        <label>Harga Coin</label>
+                        <input type="number" id="new-prod-coin" placeholder="Harga coin">
+                    </div>
+                    <div class="owner-action">
+                        <label>Stok</label>
+                        <input type="number" id="new-prod-stock" placeholder="Jumlah stok" value="100">
+                    </div>
+                    <div class="owner-action">
+                        <label>Emoji Icon</label>
+                        <input type="text" id="new-prod-icon" placeholder="🎮" maxlength="4">
+                    </div>
+                    <button class="btn-owner" onclick="addProduct()">➕ Tambah Produk</button>
+                </div>
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">📦 Daftar Produk</h3>
+                    <div id="owner-product-list" style="max-height:400px; overflow-y:auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="owner-section" id="owner-orders">
+            <div class="owner-grid">
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">📦 Pesanan Pending</h3>
+                    <div id="owner-orders-pending"></div>
+                </div>
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">⏳ Menunggu Bukti Bayar</h3>
+                    <div id="owner-orders-waiting"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Discount Section -->
+        <div class="owner-section" id="owner-discount">
+            <div class="owner-grid">
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">🏷️ Buat Diskon</h3>
+                    <div class="owner-action">
+                        <label>Pilih Produk</label>
+                        <select id="discount-product"></select>
+                    </div>
+                    <div class="owner-action">
+                        <label>Persentase Diskon (%)</label>
+                        <input type="number" id="discount-percent" placeholder="10" min="1" max="99">
+                    </div>
+                    <button class="btn-owner" onclick="setDiscount()">💰 Aktifkan Diskon</button>
+                    <button class="btn-owner" style="background:#ff3333;" onclick="removeDiscount()">🗑️ Hapus Diskon</button>
+                </div>
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">📊 Produk Dengan Diskon</h3>
+                    <div id="discount-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div class="owner-section" id="owner-users">
+            <div class="glow-panel">
+                <h3 style="margin-bottom:15px; color:var(--glow);">👥 Daftar User</h3>
+                <div id="owner-users-list"></div>
+            </div>
+        </div>
+
+        <!-- Chat Section -->
+        <div class="owner-section" id="owner-chat">
+            <div class="owner-grid">
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">💬 Daftar Chat Customer</h3>
+                    <div id="owner-chat-list"></div>
+                </div>
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">📝 Chat dengan <span id="chat-with-user">-</span></h3>
+                    <div id="owner-chat-messages" style="height:300px; overflow-y:auto; background:var(--card2); border-radius:10px; padding:15px; margin-bottom:15px;"></div>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="owner-chat-input" class="form-input" placeholder="Balas pesan..." style="flex:1;">
+                        <button class="btn-owner" onclick="sendOwnerReply()">Kirim</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs Section -->
+        <div class="owner-section" id="owner-logs">
+            <div class="owner-grid">
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">📋 Log Pesanan</h3>
+                    <div id="log-orders" style="max-height:400px; overflow-y:auto;"></div>
+                </div>
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">💳 History Transaksi</h3>
+                    <div id="log-transactions" style="max-height:400px; overflow-y:auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="owner-section" id="owner-settings">
+            <div class="owner-grid">
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">🏦 Pengaturan Rekening</h3>
+                    <div class="owner-action">
+                        <label>Nama Bank</label>
+                        <input type="text" id="set-bank-name" placeholder="BCA">
+                    </div>
+                    <div class="owner-action">
+                        <label>Nomor Rekening</label>
+                        <input type="text" id="set-bank-number" placeholder="1234567890">
+                    </div>
+                    <div class="owner-action">
+                        <label>Atas Nama</label>
+                        <input type="text" id="set-bank-holder" placeholder="Nama Pemilik">
+                    </div>
+                    <button class="btn-owner" onclick="savePaymentSettings()">💾 Simpan Rekening</button>
+                </div>
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">📱 Pengaturan E-Wallet</h3>
+                    <div class="owner-action">
+                        <label>DANA</label>
+                        <input type="text" id="set-dana" placeholder="08xxxxxxxxxx">
+                    </div>
+                    <div class="owner-action">
+                        <label>OVO</label>
+                        <input type="text" id="set-ovo" placeholder="08xxxxxxxxxx">
+                    </div>
+                    <div class="owner-action">
+                        <label>GoPay</label>
+                        <input type="text" id="set-gopay" placeholder="08xxxxxxxxxx">
+                    </div>
+                    <div class="owner-action">
+                        <label>ShopeePay</label>
+                        <input type="text" id="set-shopeepay" placeholder="08xxxxxxxxxx">
+                    </div>
+                    <button class="btn-owner" onclick="saveEwalletSettings()">💾 Simpan E-Wallet</button>
+                </div>
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">🔗 Link Discord</h3>
+                    <div class="owner-action">
+                        <label>Link Discord Server</label>
+                        <input type="text" id="set-discord" placeholder="https://discord.gg/xxxxx">
+                    </div>
+                    <button class="btn-owner" onclick="saveDiscordLink()">💾 Simpan</button>
+                </div>
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">🔐 Ganti Password Owner</h3>
+                    <div class="owner-action">
+                        <label>Password Lama</label>
+                        <input type="password" id="set-old-pass" placeholder="Password lama">
+                    </div>
+                    <div class="owner-action">
+                        <label>Password Baru</label>
+                        <input type="password" id="set-new-pass" placeholder="Password baru">
+                    </div>
+                    <div class="owner-action">
+                        <label>Konfirmasi Password Baru</label>
+                        <input type="password" id="set-new-pass2" placeholder="Ulangi password baru">
+                    </div>
+                    <button class="btn-owner" onclick="changeOwnerPassword()">🔐 Ganti Password</button>
+                </div>
+                <div class="glow-panel">
+                    <h3 style="margin-bottom:15px; color:var(--glow);">⭐ Kelola Rating</h3>
+                    <div id="manage-reviews" style="max-height:300px; overflow-y:auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CHAT WIDGET -->
+<div class="chat-widget" id="chat-widget" style="display:none;">
+    <div class="chat-box" id="chat-box">
+        <div class="chat-header">
+            💬 Chat Support
+            <span style="cursor:pointer" onclick="toggleChat()">✕</span>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-area">
+            <input class="chat-input" id="chat-input" placeholder="Ketik pesan..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="chat-send" onclick="sendChat()">➤</button>
+        </div>
+    </div>
+    <button class="chat-toggle" onclick="toggleChat()">💬</button>
+</div>
+
+<script>
+// ========== DATA STORE ==========
+const DEFAULT_PRODUCTS = [
+    { id: 1, name: "Mobile Legends Diamonds 1000", cat: "Game", price: 250000, coin: 500, icon: "💎", desc: "1000 Diamonds ML instant", stock: 50, discount: 0 },
+    { id: 2, name: "PUBG Mobile UC 600", cat: "Game", price: 150000, coin: 300, icon: "🔫", desc: "600 UC PUBG Mobile", stock: 30, discount: 0 },
+    { id: 3, name: "Genshin Impact 3280 Genesis", cat: "Game", price: 750000, coin: 1500, icon: "⚡", desc: "3280 Genesis Crystal", stock: 20, discount: 10 },
+    { id: 4, name: "Akun Valorant Immortal", cat: "Akun", price: 1500000, coin: 3000, icon: "🎯", desc: "Akun Valorant rank Immortal", stock: 5, discount: 0 },
+    { id: 5, name: "Joki Rank ML ke Mythic", cat: "Joki", price: 350000, coin: 700, icon: "🏆", desc: "Joki rank dari Legend ke Mythic", stock: 10, discount: 15 },
+    { id: 6, name: "Voucher Google Play 100K", cat: "Voucher", price: 105000, coin: 210, icon: "🎫", desc: "Voucher Google Play Rp100.000", stock: 100, discount: 0 },
+    { id: 7, name: "Free Fire 2200 Diamonds", cat: "Game", price: 300000, coin: 600, icon: "🔥", desc: "2200 Diamonds Free Fire", stock: 40, discount: 0 },
+    { id: 8, name: "Steam Wallet IDR 200K", cat: "Voucher", price: 210000, coin: 420, icon: "🎮", desc: "Steam Wallet Rp200.000", stock: 25, discount: 0 },
+];
+
+const TOPUP_PACKAGES = [
+    { coins: 100, price: 10000, bonus: 0 },
+    { coins: 300, price: 27000, bonus: 10 },
+    { coins: 500, price: 42500, bonus: 15 },
+    { coins: 1000, price: 80000, bonus: 20 },
+    { coins: 2500, price: 187500, bonus: 25 },
+    { coins: 5000, price: 350000, bonus: 30 },
+];
+
+const DEPOSIT_PACKAGES = [
+    { amount: 50000, label: "Rp 50.000" },
+    { amount: 100000, label: "Rp 100.000" },
+    { amount: 200000, label: "Rp 200.000" },
+    { amount: 500000, label: "Rp 500.000" },
+    { amount: 1000000, label: "Rp 1.000.000" },
+    { amount: 2000000, label: "Rp 2.000.000" },
+];
+
+const BADGE_NAMES = {
+    owner: "👑 OWNER",
+    warrior: "⚔️ Warrior",
+    elite: "💎 Elite",
+    master: "🔥 Master",
+    grandmaster: "👑 Grandmaster",
+    mythical: "🌟 Mythical"
+};
+
+const DEFAULT_SETTINGS = {
+    bank: { name: 'BCA', number: '1234567890', holder: 'DOOMINIKS' },
+    ewallet: { dana: '081234567890', ovo: '081234567890', gopay: '081234567890', shopeepay: '081234567890' },
+    discord: 'https://discord.gg/doominiks'
+};
+
+// ========== INIT DB ==========
+function getDB(key, def) {
+    try { return JSON.parse(localStorage.getItem('doom_' + key)) || def; }
+    catch { return def; }
+}
+function setDB(key, val) { localStorage.setItem('doom_' + key, JSON.stringify(val)); }
+
+function initDB() {
+    if (!getDB('products', null)) setDB('products', DEFAULT_PRODUCTS);
+    if (!getDB('users', null)) {
+        setDB('users', [{
+            username: 'doominiks', password: 'admin123', balance: 99999999,
+            coins: 999999, badges: ['owner'], role: 'owner', joined: new Date().toISOString()
+        }]);
+    }
+    if (!getDB('orders', null)) setDB('orders', []);
+    if (!getDB('reviews', null)) setDB('reviews', [
+        { id: 1, user: 'PlayerGG', rating: 5, text: 'Pelayanan super cepat! Diamond langsung masuk.', date: '2024-01-15' },
+        { id: 2, user: 'ProGamer99', rating: 5, text: 'Joki rank terpercaya, recommended banget!', date: '2024-01-20' },
+        { id: 3, user: 'NooB_Slayer', rating: 4, text: 'Harga murah, proses cepat. Mantap!', date: '2024-02-01' },
+    ]);
+    if (!getDB('nextId', null)) setDB('nextId', 9);
+    if (!getDB('nextReviewId', null)) setDB('nextReviewId', 4);
+    if (!getDB('settings', null)) setDB('settings', DEFAULT_SETTINGS);
+    if (!getDB('chats', null)) setDB('chats', {});
+    if (!getDB('logs', null)) setDB('logs', []);
+    if (!getDB('transactions', null)) setDB('transactions', []);
+}
+
+// ========== LOGGING ==========
+function addLog(type, message, user = '') {
+    const logs = getDB('logs', []);
+    logs.unshift({
+        type, message, user,
+        time: new Date().toISOString()
+    });
+    if (logs.length > 200) logs.pop();
+    setDB('logs', logs);
+}
+
+function addTransaction(type, amount, user, desc) {
+    const trans = getDB('transactions', []);
+    trans.unshift({
+        type, amount, user, desc,
+        time: new Date().toISOString()
+    });
+    if (trans.length > 200) trans.pop();
+    setDB('transactions', trans);
+}
+
+// ========== SESSION ==========
+let currentUser = null;
+function loadSession() {
+    const u = getDB('session', null);
+    if (u) {
+        const users = getDB('users', []);
+        currentUser = users.find(x => x.username === u);
+        if (!currentUser) { setDB('session', null); }
+    }
+    updateNav();
+    updateDiscordLink();
+}
+function saveSession(username) {
+    setDB('session', username);
+    loadSession();
+}
+function logout() {
+    setDB('session', null);
+    currentUser = null;
+    updateNav();
+    showPage('home');
+    showToast('Berhasil logout!');
+}
+
+// ========== NAV ==========
+function updateNav() {
+    const el = document.getElementById('nav-user');
+    const links = document.getElementById('nav-links');
+    
+    // Remove existing owner link
+    const existingOwner = links.querySelector('[data-owner]');
+    if (existingOwner) existingOwner.remove();
+    
+    if (currentUser) {
+        // Owner link is hidden from nav - only accessible via direct URL or profile
+        el.innerHTML = `
+            <button class="nav-user-btn" onclick="showPage('profile')">👤 ${currentUser.username}</button>
+            <button class="nav-user-btn filled" onclick="logout()">Logout</button>
+        `;
+        document.getElementById('chat-widget').style.display = 'block';
+        loadUserChat();
+    } else {
+        el.innerHTML = `
+            <button class="nav-user-btn" onclick="showPage('login')">Login</button>
+            <button class="nav-user-btn filled" onclick="showPage('register')">Daftar</button>
+        `;
+        document.getElementById('chat-widget').style.display = 'none';
+    }
+}
+
+function updateDiscordLink() {
+    const settings = getDB('settings', DEFAULT_SETTINGS);
+    document.getElementById('discord-link').href = settings.discord || 'https://discord.gg/doominiks';
+}
+
+function toggleMobileMenu() {
+    const nl = document.getElementById('nav-links');
+    nl.style.display = nl.style.display === 'flex' ? 'none' : 'flex';
+    nl.style.flexDirection = 'column';
+    nl.style.position = 'absolute';
+    nl.style.top = '60px'; nl.style.left = '0'; nl.style.right = '0';
+    nl.style.background = 'rgba(10,10,15,0.98)';
+    nl.style.padding = '15px'; nl.style.borderBottom = '1px solid rgba(255,0,51,0.2)';
+}
+
+// ========== PAGES ==========
+function showPage(page) {
+    // Auth guard
+    const authRequired = ['profile', 'orders', 'topup', 'owner'];
+    if (authRequired.includes(page) && !currentUser) {
+        showToast('⚠️ Silakan login terlebih dahulu!', 'error');
+        page = 'login';
+    }
+    if (page === 'owner' && (!currentUser || currentUser.role !== 'owner')) {
+        showToast('⛔ Akses ditolak!', 'error');
+        return;
+    }
+
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+
+    // Nav active
+    const navMap = { home: 0, products: 1, topup: 2, orders: 3, reviews: 4, discord: 5 };
+    const links = document.querySelectorAll('#nav-links .nav-link');
+    if (navMap[page] !== undefined && links[navMap[page]]) links[navMap[page]].classList.add('active');
+
+    // Render
+    if (page === 'home') renderHome();
+    if (page === 'products') renderProducts();
+    if (page === 'topup') renderTopUp();
+    if (page === 'orders') renderOrders();
+    if (page === 'reviews') renderReviews();
+    if (page === 'profile') renderProfile();
+    if (page === 'owner') renderOwner();
+
+    // Mobile menu close
+    if (window.innerWidth < 769) {
+        document.getElementById('nav-links').style.display = 'none';
+    }
+    window.scrollTo(0, 0);
+}
+
+// ========== TOAST ==========
+function showToast(msg, type = 'info') {
+    const t = document.getElementById('toast');
+    t.innerHTML = msg;
+    t.className = 'toast show' + (type === 'success' ? ' success' : '');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ========== FORMAT ==========
+function formatIDR(n) { return 'Rp ' + n.toLocaleString('id-ID'); }
+
+// ========== AUTH ==========
+function doLogin() {
+    const user = document.getElementById('login-user').value.trim();
+    const pass = document.getElementById('login-pass').value;
+    if (!user || !pass) return showToast('⚠️ Lengkapi semua field!');
+    const users = getDB('users', []);
+    const found = users.find(u => u.username.toLowerCase() === user.toLowerCase() && u.password === pass);
+    if (!found) return showToast('❌ Username atau password salah!');
+    saveSession(found.username);
+    showToast('✅ Login berhasil! Selamat datang, ' + found.username, 'success');
+    showPage('home');
+}
+
+function doRegister() {
+    const user = document.getElementById('reg-user').value.trim();
+    const pass = document.getElementById('reg-pass').value;
+    const pass2 = document.getElementById('reg-pass2').value;
+    if (!user || !pass) return showToast('⚠️ Lengkapi semua field!');
+    if (user.length < 3) return showToast('⚠️ Username minimal 3 karakter!');
+    if (pass.length < 4) return showToast('⚠️ Password minimal 4 karakter!');
+    if (pass !== pass2) return showToast('⚠️ Password tidak cocok!');
+    const users = getDB('users', []);
+    if (users.find(u => u.username.toLowerCase() === user.toLowerCase())) return showToast('❌ Username sudah digunakan!');
+    users.push({
+        username: user, password: pass, balance: 0, coins: 0,
+        badges: [], role: 'customer', joined: new Date().toISOString()
+    });
+    setDB('users', users);
+    saveSession(user);
+    showToast('🎉 Registrasi berhasil!', 'success');
+    showPage('home');
+}
+
+// ========== PRODUCTS ==========
+function getDiscountedPrice(p) {
+    if (p.discount > 0) {
+        return Math.floor(p.price * (100 - p.discount) / 100);
+    }
+    return p.price;
+}
+
+function getDiscountedCoin(p) {
+    if (p.discount > 0) {
+        return Math.floor(p.coin * (100 - p.discount) / 100);
+    }
+    return p.coin;
+}
+
+function renderProductCard(p) {
+    const discountedPrice = getDiscountedPrice(p);
+    const discountedCoin = getDiscountedCoin(p);
+    const stockClass = p.stock === 0 ? 'out' : p.stock <= 5 ? 'low' : '';
+    const stockText = p.stock === 0 ? 'Habis' : `Stok: ${p.stock}`;
+    
+    return `
+        <div class="product-card">
+            <div class="product-img">
+                ${p.icon || '📦'}
+                ${p.discount > 0 ? `<span class="discount-badge">-${p.discount}%</span>` : ''}
+            </div>
+            <div class="product-info">
+                <div class="product-cat">${p.cat}</div>
+                <div class="product-name">${p.name}</div>
+                <div class="product-price">
+                    ${formatIDR(discountedPrice)}
+                    ${p.discount > 0 ? `<span class="product-price-original">${formatIDR(p.price)}</span>` : ''}
+                </div>
+                <div class="product-coin">🪙 ${discountedCoin} Coin</div>
+                <div class="product-stock ${stockClass}">${stockText}</div>
+                <div class="product-actions">
+                    <button class="btn-buy" onclick="buyProduct(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>
+                        ${p.stock === 0 ? '❌ Habis' : '⚡ Beli Sekarang'}
+                    </button>
+                    <button class="btn-cart" onclick="viewProduct(${p.id})">👁</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderHome() {
+    const products = getDB('products', []);
+    const users = getDB('users', []);
+    const orders = getDB('orders', []);
+    const reviews = getDB('reviews', []);
+    document.getElementById('stat-products').textContent = products.length;
+    document.getElementById('stat-users').textContent = users.length;
+    document.getElementById('stat-orders').textContent = orders.length;
+    const avgR = reviews.length ? (reviews.reduce((a, r) => a + r.rating, 0) / reviews.length).toFixed(1) : '5.0';
+    document.getElementById('stat-rating').textContent = avgR;
+    document.getElementById('home-products').innerHTML = products.slice(0, 4).map(renderProductCard).join('');
+}
+
+let currentFilter = 'Semua';
+function renderProducts(filter) {
+    if (filter) currentFilter = filter;
+    const products = getDB('products', []);
+    const cats = ['Semua', ...new Set(products.map(p => p.cat))];
+    document.getElementById('filter-tabs').innerHTML = cats.map(c =>
+        `<button class="filter-tab ${c === currentFilter ? 'active' : ''}" onclick="renderProducts('${c}')">${c}</button>`
+    ).join('');
+    const filtered = currentFilter === 'Semua' ? products : products.filter(p => p.cat === currentFilter);
+    document.getElementById('all-products').innerHTML = filtered.length
+        ? filtered.map(renderProductCard).join('')
+        : '<p style="color:#555; text-align:center; grid-column:1/-1;">Tidak ada produk dalam kategori ini.</p>';
+}
+
+// ========== VIEW PRODUCT ==========
+function viewProduct(id) {
+    const products = getDB('products', []);
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    const discountedPrice = getDiscountedPrice(p);
+    document.getElementById('modal-body').innerHTML = `
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div style="text-align:center; font-size:80px; margin-bottom:15px;">${p.icon}</div>
+        <div class="modal-title">${p.name}</div>
+        ${p.discount > 0 ? `<div style="text-align:center; margin-bottom:10px;"><span class="discount-badge">DISKON ${p.discount}%</span></div>` : ''}
+        <p style="color:#888; text-align:center; margin-bottom:15px; font-size:14px;">${p.desc || ''}</p>
+        <div style="text-align:center; margin-bottom:10px;">
+            <span style="font-family:'Orbitron'; font-size:24px; color:var(--glow);">${formatIDR(discountedPrice)}</span>
+            ${p.discount > 0 ? `<span style="text-decoration:line-through; color:#666; margin-left:10px;">${formatIDR(p.price)}</span>` : ''}
+        </div>
+        <div style="text-align:center; color:var(--gold); margin-bottom:10px;">🪙 ${getDiscountedCoin(p)} Coin</div>
+        <div style="text-align:center; font-size:12px; color:#888; margin-bottom:15px;">Stok: ${p.stock} | Kategori: ${p.cat}</div>
+        <button class="btn-primary" style="width:100%;" onclick="closeModal(); buyProduct(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>
+            ${p.stock === 0 ? '❌ Stok Habis' : '⚡ Beli Sekarang'}
+        </button>
+    `;
+    document.getElementById('modal').classList.add('open');
+}
+
+// ========== BUY PRODUCT ==========
+let uploadedProof = null;
+
+function buyProduct(id) {
+    if (!currentUser) { showToast('⚠️ Silakan login terlebih dahulu!'); showPage('login'); return; }
+    const products = getDB('products', []);
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    if (p.stock === 0) return showToast('❌ Stok habis!');
+
+    const users = getDB('users', []);
+    const user = users.find(u => u.username === currentUser.username);
+    const settings = getDB('settings', DEFAULT_SETTINGS);
+    const discountedPrice = getDiscountedPrice(p);
+    const discountedCoin = getDiscountedCoin(p);
+
+    uploadedProof = null;
+
+    document.getElementById('modal-body').innerHTML = `
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title">💳 Pembayaran</div>
+        <div style="text-align:center; margin-bottom:20px;">
+            <div style="font-size:40px; margin-bottom:10px;">${p.icon}</div>
+            <div style="font-weight:600;">${p.name}</div>
+            ${p.discount > 0 ? `<div style="color:#4CAF50; font-size:12px; margin-top:5px;">🎉 Diskon ${p.discount}%</div>` : ''}
+        </div>
+        <h4 style="margin-bottom:12px; color:#aaa; font-size:13px;">Pilih Metode Pembayaran:</h4>
+        <div id="payment-methods">
+            <div class="payment-option" onclick="selectPayment(this, 'saldo')">
+                <div class="payment-radio"></div>
+                <div>
+                    <div style="font-weight:600;">💰 Saldo IDR</div>
+                    <div style="font-size:12px; color:#888;">Saldo: ${formatIDR(user.balance)} — Harga: ${formatIDR(discountedPrice)}</div>
+                </div>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this, 'coin')">
+                <div class="payment-radio"></div>
+                <div>
+                    <div style="font-weight:600;">🪙 Coin</div>
+                    <div style="font-size:12px; color:#888;">Coin: ${user.coins.toLocaleString()} — Harga: ${discountedCoin} Coin</div>
+                </div>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this, 'qris')">
+                <div class="payment-radio"></div>
+                <div>
+                    <div style="font-weight:600;">📱 QRIS</div>
+                    <div style="font-size:12px; color:#888;">Scan & bayar — ${formatIDR(discountedPrice)}</div>
+                </div>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this, 'bank')">
+                <div class="payment-radio"></div>
+                <div>
+                    <div style="font-weight:600;">🏦 Transfer Bank</div>
+                    <div style="font-size:12px; color:#888;">${settings.bank.name} - ${settings.bank.number} (${settings.bank.holder})</div>
+                </div>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this, 'ewallet')">
+                <div class="payment-radio"></div>
+                <div>
+                    <div style="font-weight:600;">📲 E-Wallet</div>
+                    <div style="font-size:12px; color:#888;">DANA/OVO/GoPay/ShopeePay — ${formatIDR(discountedPrice)}</div>
+                </div>
+            </div>
+        </div>
+        <div id="proof-upload-area" style="display:none;">
+            <h4 style="margin:15px 0 10px; color:#aaa; font-size:13px;">📸 Upload Bukti Transfer:</h4>
+            <div class="upload-area" onclick="document.getElementById('proof-input').click()">
+                <input type="file" id="proof-input" accept="image/*" onchange="handleProofUpload(event)">
+                <div id="upload-text">📤 Klik untuk upload bukti</div>
+                <img id="proof-preview" class="upload-preview" style="display:none;">
+            </div>
+        </div>
+        <button class="btn-primary" style="width:100%; margin-top:15px;" onclick="processPayment(${p.id})" id="btn-pay">💳 Bayar Sekarang</button>
+    `;
+    document.getElementById('modal').classList.add('open');
+}
+
+let selectedPayment = null;
+function selectPayment(el, method) {
+    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedPayment = method;
+    
+    // Show/hide proof upload
+    const proofArea = document.getElementById('proof-upload-area');
+    if (['qris', 'bank', 'ewallet'].includes(method)) {
+        proofArea.style.display = 'block';
+    } else {
+        proofArea.style.display = 'none';
+    }
+}
+
+function handleProofUpload(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            uploadedProof = ev.target.result;
+            document.getElementById('proof-preview').src = uploadedProof;
+            document.getElementById('proof-preview').style.display = 'block';
+            document.getElementById('upload-text').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function processPayment(productId) {
+    if (!selectedPayment) return showToast('⚠️ Pilih metode pembayaran!');
+    const products = getDB('products', []);
+    const pIdx = products.findIndex(x => x.id === productId);
+    const p = products[pIdx];
+    const users = getDB('users', []);
+    const uIdx = users.findIndex(u => u.username === currentUser.username);
+    const discountedPrice = getDiscountedPrice(p);
+    const discountedCoin = getDiscountedCoin(p);
+
+    // Check if external payment needs proof
+    if (['qris', 'bank', 'ewallet'].includes(selectedPayment)) {
+        if (!uploadedProof) {
+            return showToast('⚠️ Upload bukti transfer terlebih dahulu!');
+        }
+    }
+
+    if (selectedPayment === 'saldo') {
+        if (users[uIdx].balance < discountedPrice) return showToast('❌ Saldo tidak cukup! Silakan deposit terlebih dahulu.');
+        users[uIdx].balance -= discountedPrice;
+    } else if (selectedPayment === 'coin') {
+        if (users[uIdx].coins < discountedCoin) return showToast('❌ Coin tidak cukup! Silakan top up terlebih dahulu.');
+        users[uIdx].coins -= discountedCoin;
+    }
+
+    // Reduce stock
+    products[pIdx].stock -= 1;
+    setDB('products', products);
+    setDB('users', users);
+    currentUser = users[uIdx];
+
+    closeModal();
+    // Show processing
+    document.getElementById('processing').classList.add('active');
+    
+    setTimeout(() => {
+        document.getElementById('processing').classList.remove('active');
+        // Create order
+        const orders = getDB('orders', []);
+        const orderId = 'ORD-' + Date.now();
+        const orderStatus = ['saldo', 'coin'].includes(selectedPayment) ? 'pending' : 'waiting';
+        
+        orders.unshift({
+            id: orderId,
+            product: p.name, icon: p.icon, price: discountedPrice,
+            method: selectedPayment, status: orderStatus,
+            date: new Date().toISOString(), user: currentUser.username,
+            proof: uploadedProof || null
+        });
+        setDB('orders', orders);
+        
+        // Add logs
+        addLog('order', `Pesanan baru: ${p.name}`, currentUser.username);
+        addTransaction('payment', discountedPrice, currentUser.username, `Pembelian: ${p.name} via ${selectedPayment.toUpperCase()}`);
+        
+        selectedPayment = null;
+        uploadedProof = null;
+        
+        if (orderStatus === 'waiting') {
+            showToast('📤 Bukti transfer terkirim! Menunggu konfirmasi admin.', 'success');
+        } else {
+            showToast('🎉 Pembayaran berhasil! Pesanan sedang diproses.', 'success');
+        }
+        showPage('orders');
+    }, 2500);
+}
+
+// ========== TOPUP ==========
+function renderTopUp() {
+    document.getElementById('topup-grid').innerHTML = TOPUP_PACKAGES.map((pkg, i) => `
+        <div class="topup-card glow-panel" onclick="buyTopUp(${i})">
+            <div class="topup-coins">🪙 ${pkg.coins}</div>
+            <div style="font-size:12px; color:#888; margin-top:5px;">Coin</div>
+            <div class="topup-price">${formatIDR(pkg.price)}</div>
+            ${pkg.bonus ? `<div class="topup-bonus">+${pkg.bonus}% Bonus!</div>` : ''}
+        </div>
+    `).join('');
+
+    document.getElementById('deposit-grid').innerHTML = DEPOSIT_PACKAGES.map((pkg, i) => `
+        <div class="topup-card glow-panel" onclick="buyDeposit(${i})" style="cursor:pointer;">
+            <div style="font-family:'Orbitron'; font-size:22px; color:var(--glow); text-shadow:0 0 10px rgba(255,0,51,0.4);">💰</div>
+            <div style="font-family:'Orbitron'; font-size:18px; color:#fff; margin-top:10px;">${pkg.label}</div>
+            <div style="font-size:12px; color:#888; margin-top:5px;">Deposit Saldo</div>
+        </div>
+    `).join('');
+}
+
+function buyTopUp(idx) {
+    if (!currentUser) { showToast('⚠️ Login dulu!'); showPage('login'); return; }
+    const pkg = TOPUP_PACKAGES[idx];
+    const bonusCoins = Math.floor(pkg.coins * pkg.bonus / 100);
+    const totalCoins = pkg.coins + bonusCoins;
+    const settings = getDB('settings', DEFAULT_SETTINGS);
+    uploadedProof = null;
+
+    document.getElementById('modal-body').innerHTML = `
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title">🪙 Top Up Coin</div>
+        <div style="text-align:center;">
+            <div style="font-size:50px;">🪙</div>
+            <div style="font-family:'Orbitron'; font-size:32px; color:var(--gold); margin:15px 0;">${totalCoins} Coin</div>
+            ${bonusCoins ? `<div style="color:#4CAF50; font-size:14px; margin-bottom:10px;">Termasuk bonus +${bonusCoins} coin!</div>` : ''}
+            <div style="font-family:'Orbitron'; font-size:20px; color:var(--glow);">${formatIDR(pkg.price)}</div>
+        </div>
+        <h4 style="margin:20px 0 12px; color:#aaa; font-size:13px;">Metode Pembayaran:</h4>
+        <div class="payment-option" onclick="selectPayment(this,'qris')"><div class="payment-radio"></div><div><b>📱 QRIS</b></div></div>
+        <div class="payment-option" onclick="selectPayment(this,'bank')"><div class="payment-radio"></div><div><b>🏦 Transfer Bank</b> - ${settings.bank.name} ${settings.bank.number}</div></div>
+        <div class="payment-option" onclick="selectPayment(this,'ewallet')"><div class="payment-radio"></div><div><b>📲 E-Wallet</b></div></div>
+        <div id="proof-upload-area" style="display:none;">
+            <h4 style="margin:15px 0 10px; color:#aaa; font-size:13px;">📸 Upload Bukti Transfer:</h4>
+            <div class="upload-area" onclick="document.getElementById('proof-input').click()">
+                <input type="file" id="proof-input" accept="image/*" onchange="handleProofUpload(event)">
+                <div id="upload-text">📤 Klik untuk upload bukti</div>
+                <img id="proof-preview" class="upload-preview" style="display:none;">
+            </div>
+        </div>
+        <button class="btn-primary" style="width:100%; margin-top:15px;" onclick="processTopUp(${idx})">💳 Bayar ${formatIDR(pkg.price)}</button>
+    `;
+    selectedPayment = null;
+    document.getElementById('modal').classList.add('open');
+}
+
+function processTopUp(idx) {
+    if (!selectedPayment) return showToast('⚠️ Pilih metode pembayaran!');
+    if (!uploadedProof) return showToast('⚠️ Upload bukti transfer terlebih dahulu!');
+    
+    const pkg = TOPUP_PACKAGES[idx];
+    const bonus = Math.floor(pkg.coins * pkg.bonus / 100);
+    const total = pkg.coins + bonus;
+    
+    closeModal();
+    document.getElementById('processing').classList.add('active');
+    
+    setTimeout(() => {
+        document.getElementById('processing').classList.remove('active');
+        
+        // Create topup order
+        const orders = getDB('orders', []);
+        orders.unshift({
+            id: 'TOP-' + Date.now(),
+            product: `Top Up ${total} Coin`, icon: '🪙', price: pkg.price,
+            method: selectedPayment, status: 'waiting',
+            date: new Date().toISOString(), user: currentUser.username,
+            proof: uploadedProof, type: 'topup', coins: total
+        });
+        setDB('orders', orders);
+        
+        addLog('order', `Top Up Coin: ${total} coins`, currentUser.username);
+        addTransaction('topup', pkg.price, currentUser.username, `Top Up ${total} Coin`);
+        
+        selectedPayment = null;
+        uploadedProof = null;
+        showToast('📤 Bukti transfer terkirim! Menunggu konfirmasi admin.', 'success');
+        showPage('orders');
+    }, 2000);
+}
+
+function buyDeposit(idx) {
+    if (!currentUser) { showToast('⚠️ Login dulu!'); showPage('login'); return; }
+    const pkg = DEPOSIT_PACKAGES[idx];
+    const settings = getDB('settings', DEFAULT_SETTINGS);
+    uploadedProof = null;
+    
+    document.getElementById('modal-body').innerHTML = `
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title">💰 Deposit Saldo</div>
+        <div style="text-align:center;">
+            <div style="font-size:50px;">💰</div>
+            <div style="font-family:'Orbitron'; font-size:28px; color:var(--glow); margin:15px 0;">${pkg.label}</div>
+        </div>
+        <h4 style="margin:20px 0 12px; color:#aaa; font-size:13px;">Metode Pembayaran:</h4>
+        <div class="payment-option" onclick="selectPayment(this,'qris')"><div class="payment-radio"></div><div><b>📱 QRIS</b></div></div>
+        <div class="payment-option" onclick="selectPayment(this,'bank')"><div class="payment-radio"></div><div><b>🏦 Transfer Bank</b> - ${settings.bank.name} ${settings.bank.number}</div></div>
+        <div class="payment-option" onclick="selectPayment(this,'ewallet')"><div class="payment-radio"></div><div><b>📲 E-Wallet</b></div></div>
+        <div id="proof-upload-area" style="display:none;">
+            <h4 style="margin:15px 0 10px; color:#aaa; font-size:13px;">📸 Upload Bukti Transfer:</h4>
+            <div class="upload-area" onclick="document.getElementById('proof-input').click()">
+                <input type="file" id="proof-input" accept="image/*" onchange="handleProofUpload(event)">
+                <div id="upload-text">📤 Klik untuk upload bukti</div>
+                <img id="proof-preview" class="upload-preview" style="display:none;">
+            </div>
+        </div>
+        <button class="btn-primary" style="width:100%; margin-top:15px;" onclick="processDeposit(${idx})">💳 Bayar ${pkg.label}</button>
+    `;
+    selectedPayment = null;
+    document.getElementById('modal').classList.add('open');
+}
+
+function processDeposit(idx) {
+    if (!selectedPayment) return showToast('⚠️ Pilih metode pembayaran!');
+    if (!uploadedProof) return showToast('⚠️ Upload bukti transfer terlebih dahulu!');
+    
+    const pkg = DEPOSIT_PACKAGES[idx];
+    closeModal();
+    document.getElementById('processing').classList.add('active');
+    
+    setTimeout(() => {
+        document.getElementById('processing').classList.remove('active');
+        
+        // Create deposit order
+        const orders = getDB('orders', []);
+        orders.unshift({
+            id: 'DEP-' + Date.now(),
+            product: `Deposit Saldo ${pkg.label}`, icon: '💰', price: pkg.amount,
+            method: selectedPayment, status: 'waiting',
+            date: new Date().toISOString(), user: currentUser.username,
+            proof: uploadedProof, type: 'deposit', amount: pkg.amount
+        });
+        setDB('orders', orders);
+        
+        addLog('order', `Deposit Saldo: ${pkg.label}`, currentUser.username);
+        addTransaction('deposit', pkg.amount, currentUser.username, `Deposit Saldo ${pkg.label}`);
+        
+        selectedPayment = null;
+        uploadedProof = null;
+        showToast('📤 Bukti transfer terkirim! Menunggu konfirmasi admin.', 'success');
+        showPage('orders');
+    }, 2000);
+}
+
+// ========== ORDERS ==========
+function renderOrders() {
+    const orders = getDB('orders', []).filter(o => o.user === currentUser.username);
+    const el = document.getElementById('orders-list');
+    if (!orders.length) {
+        el.innerHTML = '<div class="glow-panel" style="text-align:center; color:#555; padding:40px;">📦 Belum ada pesanan</div>';
+        return;
+    }
+    el.innerHTML = orders.map(o => {
+        let statusClass, statusText;
+        switch(o.status) {
+            case 'pending': statusClass = 'status-pending'; statusText = '⏳ Menunggu'; break;
+            case 'shipped': statusClass = 'status-shipped'; statusText = '🚚 Dikirim'; break;
+            case 'delivered': statusClass = 'status-delivered'; statusText = '✅ Diterima'; break;
+            case 'waiting': statusClass = 'status-waiting'; statusText = '📤 Menunggu Konfirmasi'; break;
+            default: statusClass = 'status-pending'; statusText = '⏳ Proses';
+        }
+        return `
+            <div class="order-card glow-panel">
+                <div class="order-header">
+                    <div class="order-id">${o.id}</div>
+                    <span class="order-status ${statusClass}">${statusText}</span>
+                </div>
+                <div class="order-details">
+                    <div>${o.icon} ${o.product}</div>
+                    <div style="margin-top:5px;">${formatIDR(o.price)} · ${o.method.toUpperCase()}</div>
+                    <div style="margin-top:3px; font-size:11px; color:#555;">${new Date(o.date).toLocaleString('id-ID')}</div>
+                </div>
+                ${o.status === 'shipped' ? `<button class="btn-received" onclick="confirmReceived('${o.id}')">✅ Pesanan Diterima</button>` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+function confirmReceived(orderId) {
+    const orders = getDB('orders', []);
+    const idx = orders.findIndex(o => o.id === orderId);
+    if (idx >= 0) {
+        orders[idx].status = 'delivered';
+        setDB('orders', orders);
+        addLog('order', `Pesanan diterima: ${orderId}`, currentUser.username);
+        showToast('✅ Pesanan dikonfirmasi diterima!', 'success');
+        renderOrders();
+    }
+}
+
+// ========== REVIEWS ==========
+function renderReviews() {
+    const reviews = getDB('reviews', []);
+    const formArea = document.getElementById('review-form-area');
+
+    if (currentUser) {
+        formArea.innerHTML = `
+            <h3 style="margin-bottom:15px; color:var(--glow);">✍️ Tulis Ulasan</h3>
+            <div style="margin-bottom:12px;" id="star-select">
+                ${[1,2,3,4,5].map(i => `<span class="star-input" onclick="setRating(${i})" data-star="${i}">★</span>`).join('')}
+            </div>
+            <textarea class="form-input" id="review-text" rows="3" placeholder="Tulis ulasan Anda..." style="width:100%; resize:none;"></textarea>
+            <button class="btn-primary" style="margin-top:12px;" onclick="submitReview()">Kirim Ulasan</button>
+        `;
+    } else {
+        formArea.innerHTML = '<p style="color:#666; text-align:center;">Login untuk menulis ulasan</p>';
+    }
+
+    document.getElementById('reviews-list').innerHTML = reviews.map(r => `
+        <div class="review-card glow-panel">
+            <div class="review-user">
+                <span>👤 ${r.user}</span>
+                ${getUserBadgesHTML(r.user)}
+            </div>
+            <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+            <div class="review-text">${r.text}</div>
+            <div class="review-date">${r.date}</div>
+        </div>
+    `).join('');
+}
+
+let selectedRating = 0;
+function setRating(n) {
+    selectedRating = n;
+    document.querySelectorAll('.star-input').forEach(s => {
+        s.classList.toggle('active', parseInt(s.dataset.star) <= n);
+    });
+}
+
+function submitReview() {
+    if (!selectedRating) return showToast('⚠️ Pilih rating bintang!');
+    const text = document.getElementById('review-text').value.trim();
+    if (!text) return showToast('⚠️ Tulis ulasan Anda!');
+    const reviews = getDB('reviews', []);
+    let nextId = getDB('nextReviewId', 1);
+    reviews.unshift({
+        id: nextId, user: currentUser.username, rating: selectedRating, text,
+        date: new Date().toISOString().split('T')[0]
+    });
+    setDB('reviews', reviews);
+    setDB('nextReviewId', nextId + 1);
+    selectedRating = 0;
+    showToast('⭐ Ulasan berhasil dikirim!', 'success');
+    renderReviews();
+}
+
+function getUserBadgesHTML(username) {
+    const users = getDB('users', []);
+    const u = users.find(x => x.username === username);
+    if (!u || !u.badges || !u.badges.length) return '';
+    return u.badges.map(b => `<span class="badge badge-${b}">${BADGE_NAMES[b] || b}</span>`).join('');
+}
+
+// ========== PROFILE ==========
+function renderProfile() {
+    if (!currentUser) return;
+    // refresh user data
+    const users = getDB('users', []);
+    currentUser = users.find(u => u.username === currentUser.username);
+
+    const el = document.getElementById('profile-content');
+    el.innerHTML = `
+        <div class="profile-header">
+            <div class="profile-avatar">${currentUser.username.charAt(0).toUpperCase()}</div>
+            <div class="profile-info">
+                <h2>${currentUser.username}</h2>
+                <div class="profile-badges">
+                    ${currentUser.badges.map(b => `<span class="badge badge-${b}">${BADGE_NAMES[b] || b}</span>`).join('')}
+                    ${!currentUser.badges.length ? '<span style="color:#555; font-size:12px;">Belum ada badge</span>' : ''}
+                </div>
+                <div style="font-size:12px; color:#555; margin-top:8px;">
+                    ${currentUser.role === 'owner' ? '👑 Owner' : '👤 Customer'} · Bergabung: ${new Date(currentUser.joined).toLocaleDateString('id-ID')}
+                </div>
+            </div>
+        </div>
+        <div class="profile-stats">
+            <div class="stat-card glow-panel">
+                <div class="stat-value">${formatIDR(currentUser.balance)}</div>
+                <div class="stat-label">💰 Saldo IDR</div>
+            </div>
+            <div class="stat-card glow-panel">
+                <div class="stat-value">🪙 ${currentUser.coins.toLocaleString()}</div>
+                <div class="stat-label">Coin</div>
+            </div>
+            <div class="stat-card glow-panel">
+                <div class="stat-value">${getDB('orders', []).filter(o => o.user === currentUser.username).length}</div>
+                <div class="stat-label">📦 Total Pesanan</div>
+            </div>
+            <div class="stat-card glow-panel">
+                <div class="stat-value">${currentUser.badges.length}</div>
+                <div class="stat-label">🏅 Badge</div>
+            </div>
+        </div>
+        ${currentUser.role === 'owner' ? `
+            <div style="margin-top:25px; text-align:center;">
+                <button class="btn-primary" onclick="showPage('owner')">👑 Akses Owner Panel</button>
+            </div>
+        ` : ''}
+    `;
+}
+
+// ========== CHAT ==========
+function toggleChat() {
+    document.getElementById('chat-box').classList.toggle('open');
+}
+
+function loadUserChat() {
+    if (!currentUser) return;
+    const chats = getDB('chats', {});
+    const userChat = chats[currentUser.username] || [];
+    const msgArea = document.getElementById('chat-messages');
+    
+    if (userChat.length === 0) {
+        msgArea.innerHTML = '<div class="chat-msg support">Halo! 👋 Selamat datang di DOOMINIKS STORE. Ada yang bisa kami bantu?</div>';
+    } else {
+        msgArea.innerHTML = userChat.map(m => `
+            <div class="chat-msg ${m.from === 'user' ? 'user' : 'support'}">
+                ${escapeHTML(m.text)}
+                <div class="msg-time">${new Date(m.time).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</div>
+            </div>
+        `).join('');
+    }
+    msgArea.scrollTop = msgArea.scrollHeight;
+}
+
+function sendChat() {
+    if (!currentUser) return;
+    const input = document.getElementById('chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+    
+    const chats = getDB('chats', {});
+    if (!chats[currentUser.username]) chats[currentUser.username] = [];
+    
+    chats[currentUser.username].push({
+        from: 'user',
+        text: msg,
+        time: new Date().toISOString()
+    });
+    setDB('chats', chats);
+    
+    addLog('chat', `Pesan dari ${currentUser.username}: ${msg.substring(0, 50)}...`, currentUser.username);
+    
+    input.value = '';
+    loadUserChat();
+}
+
+function escapeHTML(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+}
+
+// ========== OWNER PANEL ==========
+function showOwnerTab(tab) {
+    document.querySelectorAll('.owner-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.owner-section').forEach(s => s.classList.remove('active'));
+    document.querySelector(`.owner-tab[onclick="showOwnerTab('${tab}')"]`).classList.add('active');
+    document.getElementById('owner-' + tab).classList.add('active');
+    renderOwnerSection(tab);
+}
+
+function renderOwner() {
+    renderOwnerSection('badge');
+    loadOwnerSettings();
+}
+
+function loadOwnerSettings() {
+    const settings = getDB('settings', DEFAULT_SETTINGS);
+    document.getElementById('set-bank-name').value = settings.bank?.name || '';
+    document.getElementById('set-bank-number').value = settings.bank?.number || '';
+    document.getElementById('set-bank-holder').value = settings.bank?.holder || '';
+    document.getElementById('set-dana').value = settings.ewallet?.dana || '';
+    document.getElementById('set-ovo').value = settings.ewallet?.ovo || '';
+    document.getElementById('set-gopay').value = settings.ewallet?.gopay || '';
+    document.getElementById('set-shopeepay').value = settings.ewallet?.shopeepay || '';
+    document.getElementById('set-discord').value = settings.discord || '';
+}
+
+function renderOwnerSection(tab) {
+    const users = getDB('users', []).filter(u => u.role !== 'owner');
+    const products = getDB('products', []);
+    const orders = getDB('orders', []);
+    const reviews = getDB('reviews', []);
+    const logs = getDB('logs', []);
+    const transactions = getDB('transactions', []);
+    const chats = getDB('chats', {});
+    
+    if (tab === 'badge') {
+        document.getElementById('owner-badge-user').innerHTML = users.map(u =>
+            `<option value="${u.username}">${u.username} [${u.badges.map(b => BADGE_NAMES[b]).join(', ') || 'No badges'}]</option>`
+        ).join('') || '<option disabled>Tidak ada user</option>';
+    }
+    
+    if (tab === 'product') {
+        document.getElementById('owner-product-list').innerHTML = products.map(p => `
+            <div style="padding:10px; background:var(--card2); border-radius:8px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span style="font-size:20px;">${p.icon}</span>
+                        <span style="font-weight:600; margin-left:8px;">${p.name}</span>
+                    </div>
+                    <button class="btn-small btn-delete" onclick="deleteProduct(${p.id})">🗑️</button>
+                </div>
+                <div style="font-size:12px; color:#888; margin-top:5px;">
+                    ${formatIDR(p.price)} | Stok: ${p.stock} | Diskon: ${p.discount}%
+                </div>
+            </div>
+        `).join('') || '<p style="color:#555;">Tidak ada produk.</p>';
+    }
+    
+    if (tab === 'orders') {
+        const pending = orders.filter(o => o.status === 'pending');
+        const waiting = orders.filter(o => o.status === 'waiting');
+        
+        document.getElementById('owner-orders-pending').innerHTML = pending.length
+            ? pending.map(o => `
+                <div style="padding:10px; background:var(--card2); border-radius:8px; margin-bottom:8px;">
+                    <div style="color:var(--glow); font-family:'Orbitron'; font-size:11px;">${o.id}</div>
+                    <div style="margin-top:4px;">👤 ${o.user} — ${o.product}</div>
+                    <div style="color:#888; margin-top:2px;">${formatIDR(o.price)}</div>
+                    <button class="btn-owner" style="font-size:11px; padding:5px 12px; margin-top:5px;" onclick="shipOrder('${o.id}')">🚚 Kirim</button>
+                </div>
+            `).join('')
+            : '<p style="color:#555;">Tidak ada pesanan pending.</p>';
+            
+        document.getElementById('owner-orders-waiting').innerHTML = waiting.length
+            ? waiting.map(o => `
+                <div style="padding:10px; background:var(--card2); border-radius:8px; margin-bottom:8px;">
+                    <div style="color:var(--glow); font-family:'Orbitron'; font-size:11px;">${o.id}</div>
+                    <div style="margin-top:4px;">👤 ${o.user} — ${o.product}</div>
+                    <div style="color:#888; margin-top:2px;">${formatIDR(o.price)} via ${o.method.toUpperCase()}</div>
+                    ${o.proof ? `<img src="${o.proof}" class="proof-img" style="cursor:pointer;" onclick="viewProof('${o.proof}')">` : ''}
+                    <div style="margin-top:8px;">
+                        <button class="btn-owner" style="font-size:11px; padding:5px 12px;" onclick="confirmPayment('${o.id}')">✅ Konfirmasi</button>
+                        <button class="btn-owner" style="font-size:11px; padding:5px 12px; background:#ff3333;" onclick="rejectPayment('${o.id}')">❌ Tolak</button>
+                    </div>
+                </div>
+            `).join('')
+            : '<p style="color:#555;">Tidak ada yang menunggu konfirmasi.</p>';
+    }
+    
+    if (tab === 'discount') {
+        document.getElementById('discount-product').innerHTML = products.map(p =>
+            `<option value="${p.id}">${p.name} (${p.discount > 0 ? 'Diskon ' + p.discount + '%' : 'No discount'})</option>`
+        ).join('');
+        
+        const discounted = products.filter(p => p.discount > 0);
+        document.getElementById('discount-list').innerHTML = discounted.length
+            ? discounted.map(p => `
+                <div style="padding:10px; background:var(--card2); border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span>${p.icon} ${p.name}</span>
+                        <div style="font-size:12px; color:#4CAF50;">-${p.discount}%</div>
+                    </div>
+                </div>
+            `).join('')
+            : '<p style="color:#555;">Tidak ada produk dengan diskon.</p>';
+    }
+    
+    if (tab === 'users') {
+        document.getElementById('owner-users-list').innerHTML = getDB('users', []).map(u => `
+            <div class="user-list-item">
+                <div>
+                    <span>${u.role === 'owner' ? '👑' : '👤'} ${u.username}</span>
+                    <div style="font-size:11px; color:#555;">💰 ${formatIDR(u.balance)} · 🪙 ${u.coins}</div>
+                </div>
+                <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                    ${u.badges.map(b => `<span class="badge badge-${b}" style="font-size:9px; padding:2px 8px;">${BADGE_NAMES[b]}</span>`).join('')}
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    if (tab === 'chat') {
+        const chatUsers = Object.keys(chats).filter(u => chats[u].length > 0);
+        document.getElementById('owner-chat-list').innerHTML = chatUsers.length
+            ? chatUsers.map(u => {
+                const lastMsg = chats[u][chats[u].length - 1];
+                const unread = chats[u].filter(m => m.from === 'user' && !m.read).length;
+                return `
+                    <div class="chat-user-item" onclick="openOwnerChat('${u}')">
+                        <div>
+                            <div style="font-weight:600;">👤 ${u}</div>
+                            <div style="font-size:11px; color:#888;">${lastMsg.text.substring(0, 30)}...</div>
+                        </div>
+                        ${unread > 0 ? `<span class="chat-unread">${unread}</span>` : ''}
+                    </div>
+                `;
+            }).join('')
+            : '<p style="color:#555;">Belum ada chat.</p>';
+    }
+    
+    if (tab === 'logs') {
+        document.getElementById('log-orders').innerHTML = logs.filter(l => l.type === 'order').slice(0, 50).map(l => `
+            <div class="log-item">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="log-type order">ORDER</span>
+                    <span class="log-time">${new Date(l.time).toLocaleString('id-ID')}</span>
+                </div>
+                <div style="margin-top:5px;">${l.message}</div>
+                <div style="font-size:11px; color:#666;">👤 ${l.user}</div>
+            </div>
+        `).join('') || '<p style="color:#555;">Tidak ada log.</p>';
+        
+        document.getElementById('log-transactions').innerHTML = transactions.slice(0, 50).map(t => `
+            <div class="log-item">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="log-type payment">${t.type.toUpperCase()}</span>
+                    <span class="log-time">${new Date(t.time).toLocaleString('id-ID')}</span>
+                </div>
+                <div style="margin-top:5px; color:var(--glow); font-family:'Orbitron';">${formatIDR(t.amount)}</div>
+                <div style="font-size:12px; margin-top:3px;">${t.desc}</div>
+                <div style="font-size:11px; color:#666;">👤 ${t.user}</div>
+            </div>
+        `).join('') || '<p style="color:#555;">Tidak ada transaksi.</p>';
+    }
+    
+    if (tab === 'settings') {
+        document.getElementById('manage-reviews').innerHTML = reviews.map(r => `
+            <div style="padding:10px; background:var(--card2); border-radius:8px; margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span>👤 ${r.user}</span>
+                        <span style="color:var(--gold); margin-left:8px;">${'★'.repeat(r.rating)}</span>
+                    </div>
+                    <button class="btn-small btn-delete" onclick="deleteReview(${r.id})">🗑️</button>
+                </div>
+                <div style="font-size:12px; color:#888; margin-top:5px;">${r.text}</div>
+            </div>
+        `).join('') || '<p style="color:#555;">Tidak ada review.</p>';
+    }
+}
+
+// Owner Chat
+let currentChatUser = null;
+function openOwnerChat(username) {
+    currentChatUser = username;
+    document.getElementById('chat-with-user').textContent = username;
+    
+    const chats = getDB('chats', {});
+    const userChat = chats[username] || [];
+    
+    // Mark as read
+    chats[username] = userChat.map(m => ({...m, read: true}));
+    setDB('chats', chats);
+    
+    document.getElementById('owner-chat-messages').innerHTML = userChat.map(m => `
+        <div class="chat-msg ${m.from === 'user' ? 'support' : 'user'}">
+            ${escapeHTML(m.text)}
+            <div class="msg-time">${new Date(m.time).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</div>
+        </div>
+    `).join('') || '<p style="color:#555; text-align:center;">Tidak ada pesan.</p>';
+    
+    renderOwnerSection('chat');
+}
+
+function sendOwnerReply() {
+    if (!currentChatUser) return showToast('⚠️ Pilih customer terlebih dahulu!');
+    const input = document.getElementById('owner-chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+    
+    const chats = getDB('chats', {});
+    if (!chats[currentChatUser]) chats[currentChatUser] = [];
+    
+    chats[currentChatUser].push({
+        from: 'support',
+        text: msg,
+        time: new Date().toISOString(),
+        read: true
+    });
+    setDB('chats', chats);
+    
+    input.value = '';
+    openOwnerChat(currentChatUser);
+}
+
+// Badge functions
+function giftBadge() {
+    const username = document.getElementById('owner-badge-user').value;
+    const badge = document.getElementById('owner-badge-type').value;
+    if (!username) return showToast('⚠️ Pilih user!');
+    const users = getDB('users', []);
+    const idx = users.findIndex(u => u.username === username);
+    if (idx < 0) return;
+    if (users[idx].badges.includes(badge)) return showToast('⚠️ User sudah memiliki badge ini!');
+    users[idx].badges.push(badge);
+    setDB('users', users);
+    showToast(`🎁 Badge ${BADGE_NAMES[badge]} diberikan ke ${username}!`, 'success');
+    renderOwnerSection('badge');
+}
+
+function removeBadge() {
+    const username = document.getElementById('owner-badge-user').value;
+    const badge = document.getElementById('owner-badge-type').value;
+    if (!username) return showToast('⚠️ Pilih user!');
+    const users = getDB('users', []);
+    const idx = users.findIndex(u => u.username === username);
+    if (idx < 0) return;
+    const bIdx = users[idx].badges.indexOf(badge);
+    if (bIdx < 0) return showToast('⚠️ User tidak memiliki badge ini!');
+    users[idx].badges.splice(bIdx, 1);
+    setDB('users', users);
+    showToast(`🗑️ Badge ${BADGE_NAMES[badge]} dihapus dari ${username}!`, 'success');
+    renderOwnerSection('badge');
+}
+
+// Product functions
+function addProduct() {
+    const name = document.getElementById('new-prod-name').value.trim();
+    const cat = document.getElementById('new-prod-cat').value;
+    const price = parseInt(document.getElementById('new-prod-price').value);
+    const coin = parseInt(document.getElementById('new-prod-coin').value);
+    const stock = parseInt(document.getElementById('new-prod-stock').value) || 100;
+    const icon = document.getElementById('new-prod-icon').value || '📦';
+    if (!name || !price || !coin) return showToast('⚠️ Lengkapi semua field!');
+    const products = getDB('products', []);
+    let nextId = getDB('nextId', 9);
+    products.push({ id: nextId, name, cat, price, coin, icon, desc: name, stock, discount: 0 });
+    setDB('products', products);
+    setDB('nextId', nextId + 1);
+    showToast('✅ Produk berhasil ditambahkan!', 'success');
+    document.getElementById('new-prod-name').value = '';
+    document.getElementById('new-prod-price').value = '';
+    document.getElementById('new-prod-coin').value = '';
+    document.getElementById('new-prod-stock').value = '100';
+    document.getElementById('new-prod-icon').value = '';
+    renderOwnerSection('product');
+}
+
+function deleteProduct(id) {
+    if (!confirm('Hapus produk ini?')) return;
+    const products = getDB('products', []);
+    const idx = products.findIndex(p => p.id === id);
+    if (idx >= 0) {
+        products.splice(idx, 1);
+        setDB('products', products);
+        showToast('🗑️ Produk dihapus!', 'success');
+        renderOwnerSection('product');
+    }
+}
+
+// Order functions
+function shipOrder(orderId) {
+    const orders = getDB('orders', []);
+    const idx = orders.findIndex(o => o.id === orderId);
+    if (idx >= 0) {
+        orders[idx].status = 'shipped';
+        setDB('orders', orders);
+        addLog('order', `Pesanan dikirim: ${orderId}`, 'owner');
+        showToast('🚚 Pesanan telah dikirim!', 'success');
+        renderOwnerSection('orders');
+    }
+}
+
+function confirmPayment(orderId) {
+    const orders = getDB('orders', []);
+    const idx = orders.findIndex(o => o.id === orderId);
+    if (idx >= 0) {
+        const order = orders[idx];
+        orders[idx].status = 'pending';
+        
+        // If it's a topup or deposit, add to user balance
+        if (order.type === 'topup') {
+            const users = getDB('users', []);
+            const uIdx = users.findIndex(u => u.username === order.user);
+            if (uIdx >= 0) {
+                users[uIdx].coins += order.coins;
+                setDB('users', users);
+            }
+        } else if (order.type === 'deposit') {
+            const users = getDB('users', []);
+            const uIdx = users.findIndex(u => u.username === order.user);
+            if (uIdx >= 0) {
+                users[uIdx].balance += order.amount;
+                setDB('users', users);
+            }
+        }
+        
+        setDB('orders', orders);
+        addLog('order', `Pembayaran dikonfirmasi: ${orderId}`, 'owner');
+        addTransaction('confirm', order.price, order.user, `Konfirmasi: ${order.product}`);
+        showToast('✅ Pembayaran dikonfirmasi!', 'success');
+        renderOwnerSection('orders');
+    }
+}
+
+function rejectPayment(orderId) {
+    if (!confirm('Tolak pembayaran ini?')) return;
+    const orders = getDB('orders', []);
+    const idx = orders.findIndex(o => o.id === orderId);
+    if (idx >= 0) {
+        orders.splice(idx, 1);
+        setDB('orders', orders);
+        addLog('order', `Pembayaran ditolak: ${orderId}`, 'owner');
+        showToast('❌ Pembayaran ditolak!', 'success');
+        renderOwnerSection('orders');
+    }
+}
+
+function viewProof(src) {
+    document.getElementById('modal-body').innerHTML = `
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title">📸 Bukti Transfer</div>
+        <img src="${src}" style="width:100%; border-radius:10px;">
+    `;
+    document.getElementById('modal').classList.add('open');
+}
+
+// Discount functions
+function setDiscount() {
+    const prodId = parseInt(document.getElementById('discount-product').value);
+    const percent = parseInt(document.getElementById('discount-percent').value);
+    if (!prodId || !percent || percent < 1 || percent > 99) return showToast('⚠️ Input tidak valid!');
+    const products = getDB('products', []);
+    const idx = products.findIndex(p => p.id === prodId);
+    if (idx >= 0) {
+        products[idx].discount = percent;
+        setDB('products', products);
+        showToast(`🏷️ Diskon ${percent}% diterapkan!`, 'success');
+        renderOwnerSection('discount');
+    }
+}
+
+function removeDiscount() {
+    const prodId = parseInt(document.getElementById('discount-product').value);
+    if (!prodId) return showToast('⚠️ Pilih produk!');
+    const products = getDB('products', []);
+    const idx = products.findIndex(p => p.id === prodId);
+    if (idx >= 0) {
+        products[idx].discount = 0;
+        setDB('products', products);
+        showToast('🗑️ Diskon dihapus!', 'success');
+        renderOwnerSection('discount');
+    }
+}
+
+// Settings functions
+function savePaymentSettings() {
+    const settings = getDB('settings', DEFAULT_SETTINGS);
+    settings.bank = {
+        name: document.getElementById('set-bank-name').value,
+        number: document.getElementById('set-bank-number').value,
+        holder: document.getElementById('set-bank-holder').value
+    };
+    setDB('settings', settings);
+    showToast('💾 Rekening bank tersimpan!', 'success');
+}
+
+function saveEwalletSettings() {
+    const settings = getDB('settings', DEFAULT_SETTINGS);
+    settings.ewallet = {
+        dana: document.getElementById('set-dana').value,
+        ovo: document.getElementById('set-ovo').value,
+        gopay: document.getElementById('set-gopay').value,
+        shopeepay: document.getElementById('set-shopeepay').value
+    };
+    setDB('settings', settings);
+    showToast('💾 E-Wallet tersimpan!', 'success');
+}
+
+function saveDiscordLink() {
+    const settings = getDB('settings', DEFAULT_SETTINGS);
+    settings.discord = document.getElementById('set-discord').value;
+    setDB('settings', settings);
+    updateDiscordLink();
+    showToast('💾 Link Discord tersimpan!', 'success');
+}
+
+function changeOwnerPassword() {
+    const oldPass = document.getElementById('set-old-pass').value;
+    const newPass = document.getElementById('set-new-pass').value;
+    const newPass2 = document.getElementById('set-new-pass2').value;
+    
+    if (!oldPass || !newPass || !newPass2) return showToast('⚠️ Lengkapi semua field!');
+    if (newPass !== newPass2) return showToast('⚠️ Password baru tidak cocok!');
+    if (newPass.length < 4) return showToast('⚠️ Password minimal 4 karakter!');
+    
+    const users = getDB('users', []);
+    const idx = users.findIndex(u => u.username === currentUser.username);
+    
+    if (users[idx].password !== oldPass) return showToast('❌ Password lama salah!');
+    
+    users[idx].password = newPass;
+    setDB('users', users);
+    
+    document.getElementById('set-old-pass').value = '';
+    document.getElementById('set-new-pass').value = '';
+    document.getElementById('set-new-pass2').value = '';
+    
+    showToast('🔐 Password berhasil diubah!', 'success');
+}
+
+function deleteReview(id) {
+    if (!confirm('Hapus review ini?')) return;
+    const reviews = getDB('reviews', []);
+    const idx = reviews.findIndex(r => r.id === id);
+    if (idx >= 0) {
+        reviews.splice(idx, 1);
+        setDB('reviews', reviews);
+        showToast('🗑️ Review dihapus!', 'success');
+        renderOwnerSection('settings');
+    }
+}
+
+// ========== MODAL ==========
+function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+}
+document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+// ========== PARTICLES ==========
+function createParticles() {
+    const c = document.getElementById('particles');
+    for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (5 + Math.random() * 10) + 's';
+        p.style.animationDelay = Math.random() * 5 + 's';
+        p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+        c.appendChild(p);
+    }
+}
+
+// ========== INIT ==========
+window.addEventListener('load', () => {
+    initDB();
+    loadSession();
+    createParticles();
+    renderHome();
+
+    // Loading screen
+    setTimeout(() => {
+        document.getElementById('loading-screen').classList.add('hidden');
+    }, 3000);
+});
+</script>
+</body>
+</html>
